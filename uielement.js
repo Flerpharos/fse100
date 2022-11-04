@@ -8,8 +8,12 @@ class UIElement {
 
     this.boundsA = null;
     this.boundsB = null;
-    this.position = null;
     this.isFocused = false;
+    this.style = {};
+  }
+
+  setStyle(parts) {
+    this.style = { ...this.style, ...parts };
   }
 
   focus(val = true) {
