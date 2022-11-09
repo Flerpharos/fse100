@@ -7,7 +7,7 @@ class PEvent {
   }
 
   stopPropogation() {
-    this.details.phase = STOPPED;
+    this.details.phase = EventPhase.STOPPED;
   }
 
   /**
@@ -21,8 +21,8 @@ class PEvent {
 }
 
 class ClickEvent extends PEvent {
-  contructor(x, y, details = {}) {
-    super("click", { x, y, ...details });
+  contructor(x, y, key, details = {}) {
+    super("click", { x, y, key, ...details });
   }
 
   /**
@@ -41,9 +41,9 @@ class ClickEvent extends PEvent {
   }
 }
 
-class KeyEvent extends PEvent {
-  contructor(keyinfo, details = {}) {
-    super("key", { keyinfo, ...details });
+class MouseDownEvent extends PEvent {
+  contructor(x, y, key, details = {}) {
+    super("mousedown", { x, y, key, ...details });
   }
 
   /**
@@ -52,7 +52,91 @@ class KeyEvent extends PEvent {
    * @return {UIElement[]} returns a list of children that capture this event
    */
   doCapture(children) {
+    return children.filter(
+      (child) =>
+        child.boundsA.x < this.details.x &&
+        child.boundsA.y < this.details.y &&
+        child.boundsB.x > this.details.x &&
+        child.boundsB.y > this.details.y
+    );
+  }
+}
+
+class MouseUpEvent extends PEvent {
+  contructor(x, y, key, details = {}) {
+    super("mouseup", { x, y, key, ...details });
+  }
+
+  /**
+   * Describe me :)
+   * @param {UIElement[]} children a list of children to capture from
+   * @return {UIElement[]} returns a list of children that capture this event
+   */
+  doCapture(children) {
+    return children.filter((child) =>
+      child.inBounds(this.details.x, this.details.y)
+    );
+  }
+}
+
+class MouseMoveEvent extends PEvent {
+  contructor(x, y, dx, dy, details = {}) {
+    super("mousemove", { x, y, dx, dy, key, ...details });
+  }
+
+  /**
+   * Describe me :)
+   * @param {UIElement[]} children a list of children to capture from
+   * @return {UIElement[]} returns a list of children that capture this event
+   */
+  doCapture(children) {
+    const x = this.details.x;
+    const y = this.details.y;
+    const x2 = this.details.x + this.details.dx;
+    const y2 = this.details.y + this.details.dy;
+
+    return children.filter(
+      //TODO: Change this to include more than just the nodes at the endpoints
+      (child) => child.inBounds(x, y) || child.inBounds(x2, y2)
+    );
+  }
+}
+
+class DragEvent extends PEvent {
+  contructor(x, y, dx, dy, key, details = {}) {
+    super("drag", { x, y, dx, dy, key, ...details });
+  }
+
+  /**
+   * Describe me :)
+   * @param {UIElement[]} children a list of children to capture from
+   * @return {UIElement[]} returns a list of children that capture this event
+   */
+  doCapture(children) {
+    //TODO: Make this filter out any children not intersecting the drag for efficiency reasons
     return children;
+    /* children.filter(
+      (child) =>
+        child.boundsA.x < this.details.x &&
+        child.boundsA.y < this.details.y &&
+        child.boundsB.x > this.details.x &&
+        child.boundsB.y > this.details.y
+    ); */
+  }
+}
+
+class KeyEvent extends PEvent {
+  contructor(keyinfo, details = {}) {
+    super("key", { keyinfo, ...details });
+  }
+
+  /**
+   * We capture nothing because this event is meant to be triggered to "focused" elements rather than the Root
+   * @param {UIElement[]} children a list of children to capture from
+   * @return {UIElement[]} returns a list of children that capture this event
+   */
+  doCapture(children) {
+    return [];
   }
 }
 

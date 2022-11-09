@@ -6,10 +6,15 @@ class UIElement {
 
     for (const child of children) child.parent = this;
 
-    this.boundsA = null;
-    this.boundsB = null;
+    this.width = 0;
+    this.height = 0;
+    this.offset = { x: 0, y: 0 };
     this.isFocused = false;
-    this.style = {};
+    this.style = new Proxy(new Reactive(), {
+      set(target, prop, receiver) {
+        target.setProperty(prop, receiver);
+      },
+    });
   }
 
   setStyle(parts) {
@@ -18,20 +23,42 @@ class UIElement {
 
   focus(val = true) {
     this.isFocused = val;
+    //root.focused = this;
   }
 
-  setBounds(a, b) {
-    this.boundsA = a;
-    this.boundsB = b;
+  draw() {
+    throw new Error("Unimplemented");
+  }
+
+  setBounds() {
+    this.boundsA = { x: this.offset.x, y: this.offset.y };
+    this.boundsB = {
+      x: this.offset.x + this.width,
+      y: this.offset.y + this.height,
+    };
+  }
+
+  inBounds(x, y) {
+    return (
+      this.boundsA.x >= x &&
+      this.boundsA.y >= y &&
+      this.boundsB.x <= x &&
+      this.boundsB.y <= y
+    );
   }
 
   addEventListener(event, eventHandler) {
     if (event in this.handlers) {
       this.handlers[event].push(eventHandler);
+      return this.handlers[event].length - 1;
     } else {
       this.handlers[event] = [];
-      this.addEventListener(event, eventHandler);
+      return this.addEventListener(event, eventHandler);
     }
+  }
+
+  removeEventListener(event, index) {
+    this.handlers[event].splice(index, 1);
   }
 
   dispatchEvent(eventValue) {
