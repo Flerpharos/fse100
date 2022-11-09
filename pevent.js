@@ -21,7 +21,7 @@ class PEvent {
 }
 
 class ClickEvent extends PEvent {
-  contructor(x, y, key, details = {}) {
+  constructor(x, y, key, details = {}) {
     super("click", { x, y, key, ...details });
   }
 
@@ -42,7 +42,7 @@ class ClickEvent extends PEvent {
 }
 
 class MouseDownEvent extends PEvent {
-  contructor(x, y, key, details = {}) {
+  constructor(x, y, key, details = {}) {
     super("mousedown", { x, y, key, ...details });
   }
 
@@ -52,18 +52,14 @@ class MouseDownEvent extends PEvent {
    * @return {UIElement[]} returns a list of children that capture this event
    */
   doCapture(children) {
-    return children.filter(
-      (child) =>
-        child.boundsA.x < this.details.x &&
-        child.boundsA.y < this.details.y &&
-        child.boundsB.x > this.details.x &&
-        child.boundsB.y > this.details.y
+    return children.filter((child) =>
+      child.inBounds(this.details.x, this.details.y)
     );
   }
 }
 
 class MouseUpEvent extends PEvent {
-  contructor(x, y, key, details = {}) {
+  constructor(x, y, key, details = {}) {
     super("mouseup", { x, y, key, ...details });
   }
 
@@ -80,7 +76,7 @@ class MouseUpEvent extends PEvent {
 }
 
 class MouseMoveEvent extends PEvent {
-  contructor(x, y, dx, dy, details = {}) {
+  constructor(x, y, dx, dy, details = {}) {
     super("mousemove", { x, y, dx, dy, key, ...details });
   }
 
@@ -103,7 +99,7 @@ class MouseMoveEvent extends PEvent {
 }
 
 class DragEvent extends PEvent {
-  contructor(x, y, dx, dy, key, details = {}) {
+  constructor(x, y, dx, dy, key, details = {}) {
     super("drag", { x, y, dx, dy, key, ...details });
   }
 
@@ -126,7 +122,7 @@ class DragEvent extends PEvent {
 }
 
 class KeyEvent extends PEvent {
-  contructor(keyinfo, details = {}) {
+  constructor(keyinfo, details = {}) {
     super("key", { keyinfo, ...details });
   }
 

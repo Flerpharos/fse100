@@ -1,20 +1,31 @@
 class UIElement {
-  constructor(/* noTab = true */ ...children) {
+  constructor(/* noTab = true */ style, ...children) {
     this.children = children;
     // this.noTab = noTab;
     this.parent = null;
 
     for (const child of children) child.parent = this;
 
+    this.handlers = {};
+
     this.width = 0;
     this.height = 0;
     this.offset = { x: 0, y: 0 };
     this.isFocused = false;
     this.style = new Proxy(new Reactive(), {
-      set(target, prop, receiver) {
-        target.setProperty(prop, receiver);
+      set(target, prop, value, receiver) {
+        target.setProperty(prop, value);
+        return true;
       },
     });
+
+    for (const [i, val] of Object.entries(style)) {
+      this.style[i] = val;
+    }
+  }
+
+  postLoad() {
+    this.children.forEach((c) => c.postLoad());
   }
 
   setStyle(parts) {
@@ -23,7 +34,7 @@ class UIElement {
 
   focus(val = true) {
     this.isFocused = val;
-    //root.focused = this;
+    root.focused = this;
   }
 
   draw() {
@@ -38,12 +49,24 @@ class UIElement {
     };
   }
 
+  getBounds() {
+    return { boundsA: this.boundsA, boundsB: this.boundsB };
+  }
+
+  getTotalOffset() {
+    const { x, y } = this.parent.getTotalOffset();
+
+    return { x: this.offset.x + x, y: this.offset.y + y };
+  }
+
   inBounds(x, y) {
+    const { _x, _y } = this.getTotalOffset();
+
     return (
-      this.boundsA.x >= x &&
-      this.boundsA.y >= y &&
-      this.boundsB.x <= x &&
-      this.boundsB.y <= y
+      this.boundsA.x + _x <= x &&
+      this.boundsA.y + _y <= y &&
+      this.boundsB.x + _x >= x &&
+      this.boundsB.y + _y >= y
     );
   }
 

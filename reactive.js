@@ -11,10 +11,10 @@ class Reactive {
   listen(name, listener) {
     if (name in this.handlers) {
       this.handlers[name].push(listener);
-      return this.handlers[listener].length - 1;
+      return this.handlers[name].length - 1;
     } else {
       this.handlers[name] = [];
-      return this.liten(name, listener);
+      return this.listen(name, listener);
     }
   }
 
