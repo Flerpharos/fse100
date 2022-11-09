@@ -1,6 +1,6 @@
 class PText extends UIElement {
   constructor(style, text) {
-    super(style);
+    super({ "font-family": "Helvetica" });
 
     this.text = text;
 
@@ -15,8 +15,11 @@ class PText extends UIElement {
       this.setBounds();
     });
 
+    for (const [i, val] of Object.entries(style)) {
+      this.style[i] = val;
+    }
+
     this.style["foreground-color"] ??= "#111111";
-    this.style["font-family"] ??= "Helvetica";
     this.style["font-size"] ??= 20;
   }
 

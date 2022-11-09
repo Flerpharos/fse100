@@ -8,6 +8,15 @@ class Container extends UIElement {
     this.style["margin"] ??= 10;
     this.style["padding"] ??= 10;
 
+    this.width =
+      this.children.reduce((p, c) => p + c.width + 1, 0) +
+      this.style["margin"] * 2 +
+      this.style["padding"] * 2;
+    this.height =
+      this.children.reduce((p, c) => p + c.height + 1, 0) +
+      this.style["margin"] * 2 +
+      this.style["padding"] * 2;
+
     //TODO: Implement max-sizes
     // this.style["max-height"] ??= null;
     // this.style["max-width"] ??= null;
@@ -34,19 +43,19 @@ class Container extends UIElement {
   getBounds() {
     return {
       boundsA: {
-        x: this.boundsA.x + this.style["padding"] + this.style["margin"],
-        y: this.boundsA.y + this.style["padding"] + this.style["margin"],
+        x: this.boundsA.x + this.style["padding"],
+        y: this.boundsA.y + this.style["padding"],
       },
       boundsB: {
-        x: this.boundsB.x - this.style["padding"] - this.style["margin"],
-        y: this.boundsB.y - this.style["padding"] - this.style["margin"],
+        x: this.boundsB.x - this.style["padding"],
+        y: this.boundsB.y - this.style["padding"],
       },
     };
   }
 
   draw() {
     if (
-      this.style["background-color"] != null ||
+      this.style["background-color"] != "none" ||
       this.style["border-width"] != 0
     ) {
       push();

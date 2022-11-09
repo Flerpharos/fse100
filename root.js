@@ -4,20 +4,28 @@ class Root extends UIElement {
 
     this.setElement(element);
     this.focused = this;
-    window.root = this;
+    this.setRoot(this);
 
     this.postLoad();
+    this.setActive(true);
+
+    //TODO: Redo space partitioning to be top-down
   }
 
   postLoad() {
-    let offsetY = 0;
+    //Root does not perform basic spacing so that offset blocks can be placed here
+    /* let offsetY = 0;
     for (const child of this.children) {
       child.offset.y = offsetY;
       offsetY += child.height + 1;
       child.setBounds();
-    }
+    } */
 
     super.postLoad();
+  }
+
+  setActive(val) {
+    this.active = val;
   }
 
   getTotalOffset() {
@@ -29,40 +37,45 @@ class Root extends UIElement {
     this.height = element.clientHeight;
     this.setBounds();
 
+    //TODO: allow removal of root from element?
     element.addEventListener("mousemove", (evt) => {
-      this.dispatchEvent(
-        new MouseMoveEvent(mouseX, mouseY, evt.movementX, evt.movementY)
-      );
+      if (this.active)
+        this.dispatchEvent(
+          new MouseMoveEvent(mouseX, mouseY, evt.movementX, evt.movementY)
+        );
     });
 
     element.addEventListener("mousedown", (evt) => {
-      this.dispatchEvent(
-        new MouseDownEvent(
-          mouseX,
-          mouseY,
-          ["left", "middle", "right", "button4", "button5"][evt.button]
-        )
-      );
+      if (this.active)
+        this.dispatchEvent(
+          new MouseDownEvent(
+            mouseX,
+            mouseY,
+            ["left", "middle", "right", "button4", "button5"][evt.button]
+          )
+        );
     });
 
     element.addEventListener("mouseup", (evt) => {
-      this.dispatchEvent(
-        new MouseUpEvent(
-          mouseX,
-          mouseY,
-          ["left", "middle", "right", "button4", "button5"][evt.button]
-        )
-      );
+      if (this.active)
+        this.dispatchEvent(
+          new MouseUpEvent(
+            mouseX,
+            mouseY,
+            ["left", "middle", "right", "button4", "button5"][evt.button]
+          )
+        );
     });
 
     element.addEventListener("click", (evt) => {
-      this.dispatchEvent(
-        new ClickEvent(
-          mouseX,
-          mouseY,
-          ["left", "middle", "right", "button4", "button5"][evt.button]
-        )
-      );
+      if (this.active)
+        this.dispatchEvent(
+          new ClickEvent(
+            mouseX,
+            mouseY,
+            ["left", "middle", "right", "button4", "button5"][evt.button]
+          )
+        );
     });
   }
 

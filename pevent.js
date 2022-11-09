@@ -31,12 +31,8 @@ class ClickEvent extends PEvent {
    * @return {UIElement[]} returns a list of children that capture this event
    */
   doCapture(children) {
-    return children.filter(
-      (child) =>
-        child.boundsA.x < this.details.x &&
-        child.boundsA.y < this.details.y &&
-        child.boundsB.x > this.details.x &&
-        child.boundsB.y > this.details.y
+    return children.filter((child) =>
+      child.inBounds(this.details.x, this.details.y)
     );
   }
 }

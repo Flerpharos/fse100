@@ -42,11 +42,16 @@ class UIElement {
   }
 
   setBounds() {
-    this.boundsA = { x: this.offset.x, y: this.offset.y };
+    this.boundsA = { x: 0, y: 0 };
     this.boundsB = {
-      x: this.offset.x + this.width,
-      y: this.offset.y + this.height,
+      x: this.width,
+      y: this.height,
     };
+  }
+
+  setRoot(root) {
+    this.root = root;
+    this.children.forEach((c) => c.setRoot(root));
   }
 
   getBounds() {
@@ -60,13 +65,12 @@ class UIElement {
   }
 
   inBounds(x, y) {
-    const { _x, _y } = this.getTotalOffset();
-
+    const { x: x1, y: y1 } = this.getTotalOffset();
     return (
-      this.boundsA.x + _x <= x &&
-      this.boundsA.y + _y <= y &&
-      this.boundsB.x + _x >= x &&
-      this.boundsB.y + _y >= y
+      this.boundsA.x + x1 <= x &&
+      this.boundsA.y + y1 <= y &&
+      this.boundsB.x + x1 >= x &&
+      this.boundsB.y + y1 >= y
     );
   }
 
@@ -108,6 +112,7 @@ class UIElement {
         }
       } else if (eventValue.details.phase == EventPhase.CAPTURE) {
         const captured = eventValue.doCapture(this.children);
+
         if (captured.length == 0) {
           const details = {
             ...eventValue.details,
